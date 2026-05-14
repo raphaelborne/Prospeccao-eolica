@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Prospecção Eólica">
+<title>Prospecção Eólica — Alegrete</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #1c2128;
+    --border: #30363d;
+    --accent: #3fb950;
+    --accent2: #58a6ff;
+    --warn: #f0883e;
+    --danger: #f85149;
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'IBM Plex Sans', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100vh;
+    padding-bottom: 100px;
+  }
+
+  /* HEADER */
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 20px 12px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+  }
+  .project-tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .dot-live {
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+  .counter-badge {
+    font-family: var(--mono);
+    font-size: 11px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--accent2);
+    padding: 4px 10px;
+    border-radius: 20px;
+  }
+  .header h1 {
+    font-family: var(--mono);
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: -0.02em;
+  }
+  .header-sub {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  /* TABS */
+  .tabs {
+    display: flex;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 89px;
+    z-index: 99;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab {
+    flex: 1;
+    min-width: 80px;
+    padding: 10px 4px;
+    font-family: var(--mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    background: none;
+    border: none;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .tab.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+
+  /* PAGES */
+  .page { display: none; padding: 20px; }
+  .page.active { display: block; }
+
+  /* SECTIONS */
+  .section {
+    margin-bottom: 24px;
+  }
+  .section-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* FIELDS */
+  .field { margin-bottom: 14px; }
+  .field label {
+    display: block;
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 5px;
+    font-family: var(--mono);
+  }
+  .field label span.req { color: var(--danger); margin-left: 2px; }
+
+  input[type="text"],
+  input[type="tel"],
+  input[type="number"],
+  select,
+  textarea {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 16px; /* prevents iOS zoom */
+    padding: 12px 14px;
+    outline: none;
+    transition: border-color 0.2s;
+    -webkit-appearance: none;
+  }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--accent2);
+  }
+  textarea {
+    resize: none;
+    min-height: 80px;
+    line-height: 1.5;
+  }
+  select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238b949e' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 36px;
+    cursor: pointer;
+  }
+  select option { background: var(--surface2); }
+
+  /* ROW */
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  /* RADIO PILLS */
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; }
+  .pill-option { display: none; }
+  .pill-label {
+    padding: 8px 14px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    font-size: 13px;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: var(--mono);
+    user-select: none;
+  }
+  .pill-option:checked + .pill-label {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(63,185,80,0.08);
+  }
+
+  /* STATUS CHIPS */
+  .status-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .status-opt { display: none; }
+  .status-card {
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: center;
+  }
+  .status-card .s-icon { font-size: 20px; margin-bottom: 4px; }
+  .status-card .s-label { font-size: 11px; font-family: var(--mono); color: var(--muted); }
+
+  .status-opt[value="Interessado"]:checked ~ .status-grid .s-card-interessado,
+  .status-opt[value="Neutro"]:checked ~ .status-grid .s-card-neutro,
+  .status-opt[value="Resistente"]:checked ~ .status-grid .s-card-resistente,
+  .status-opt[value="Ausente"]:checked ~ .status-grid .s-card-ausente { border-color: var(--accent2); background: rgba(88,166,255,0.08); }
+
+  .s-card-interessado.sel { border-color: var(--accent) !important; background: rgba(63,185,80,0.1) !important; }
+  .s-card-neutro.sel { border-color: var(--warn) !important; background: rgba(240,136,62,0.1) !important; }
+  .s-card-resistente.sel { border-color: var(--danger) !important; background: rgba(248,81,73,0.1) !important; }
+  .s-card-ausente.sel { border-color: var(--muted) !important; background: rgba(139,148,158,0.1) !important; }
+
+  /* GPS */
+  .gps-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .gps-icon { font-size: 24px; flex-shrink: 0; }
+  .gps-data { flex: 1; }
+  .gps-coords {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--accent2);
+  }
+  .gps-status { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .btn-gps {
+    background: none;
+    border: 1px solid var(--accent2);
+    color: var(--accent2);
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-family: var(--mono);
+    font-size: 11px;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 0.15s;
+  }
+  .btn-gps:active { background: rgba(88,166,255,0.1); }
+
+  /* SAVE BUTTON */
+  .btn-save {
+    width: 100%;
+    background: var(--accent);
+    color: #0d1117;
+    border: none;
+    border-radius: 12px;
+    padding: 16px;
+    font-family: var(--mono);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 0.05em;
+    transition: opacity 0.15s, transform 0.1s;
+    margin-top: 8px;
+  }
+  .btn-save:active { opacity: 0.8; transform: scale(0.98); }
+
+  /* RECORDS LIST */
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.8;
+  }
+  .empty-state .big { font-size: 40px; margin-bottom: 12px; }
+
+  .record-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: border-color 0.15s;
+    position: relative;
+  }
+  .record-card:active { border-color: var(--accent2); }
+  .record-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .record-meta {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .record-status {
+    position: absolute;
+    right: 14px;
+    top: 14px;
+    font-size: 10px;
+    font-family: var(--mono);
+    padding: 3px 8px;
+    border-radius: 20px;
+  }
+  .status-I { background: rgba(63,185,80,0.15); color: var(--accent); }
+  .status-N { background: rgba(240,136,62,0.15); color: var(--warn); }
+  .status-R { background: rgba(248,81,73,0.15); color: var(--danger); }
+  .status-A { background: rgba(139,148,158,0.15); color: var(--muted); }
+
+  /* EXPORT */
+  .export-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+  .export-panel h3 {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 12px;
+  }
+  .stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-top: 1px solid var(--border);
+    font-size: 13px;
+  }
+  .stat-num {
+    font-family: var(--mono);
+    font-size: 18px;
+    font-weight: 600;
+  }
+  .btn-export {
+    width: 100%;
+    background: none;
+    border: 1px solid var(--accent2);
+    color: var(--accent2);
+    border-radius: 10px;
+    padding: 13px;
+    font-family: var(--mono);
+    font-size: 13px;
+    cursor: pointer;
+    margin-bottom: 10px;
+    transition: background 0.15s;
+  }
+  .btn-export:active { background: rgba(88,166,255,0.08); }
+  .btn-danger {
+    width: 100%;
+    background: none;
+    border: 1px solid var(--danger);
+    color: var(--danger);
+    border-radius: 10px;
+    padding: 13px;
+    font-family: var(--mono);
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .btn-danger:active { background: rgba(248,81,73,0.08); }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 90px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 12px;
+    padding: 10px 18px;
+    border-radius: 20px;
+    opacity: 0;
+    transition: all 0.3s;
+    pointer-events: none;
+    white-space: nowrap;
+    z-index: 999;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* DETAIL MODAL */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 200;
+    padding: 20px;
+    overflow-y: auto;
+  }
+  .modal-overlay.open { display: flex; align-items: flex-start; padding-top: 60px; }
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    width: 100%;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+  }
+  .modal-name { font-size: 16px; font-weight: 600; }
+  .btn-close {
+    background: var(--surface2);
+    border: none;
+    color: var(--muted);
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .modal-row {
+    padding: 8px 0;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .modal-key {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    min-width: 90px;
+    padding-top: 2px;
+  }
+  .modal-val { font-size: 13px; color: var(--text); flex: 1; word-break: break-word; }
+  .btn-del {
+    width: 100%;
+    background: none;
+    border: 1px solid var(--danger);
+    color: var(--danger);
+    border-radius: 8px;
+    padding: 11px;
+    font-family: var(--mono);
+    font-size: 12px;
+    cursor: pointer;
+    margin-top: 14px;
+  }
+
+  /* BOTTOM NAV safe area */
+  .bottom-safe { height: env(safe-area-inset-bottom, 20px); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div class="project-tag"><div class="dot-live"></div>Projeto Eólico · Alegrete/RS</div>
+    <div class="counter-badge" id="counter">0 registros</div>
+  </div>
+  <h1>Prospecção Rural</h1>
+  <div class="header-sub" id="current-date">—</div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('form')">📋 Novo</button>
+  <button class="tab" onclick="switchTab('list')">📁 Registros</button>
+  <button class="tab" onclick="switchTab('export')">📊 Exportar</button>
+</div>
+
+<!-- ═══════════════════════════════════════════════ FORM -->
+<div class="page active" id="page-form">
+
+  <div class="section">
+    <div class="section-label">Identificação</div>
+
+    <div class="field">
+      <label>Nome completo do proprietário <span class="req">*</span></label>
+      <input type="text" id="nome" placeholder="Ex: João Carlos da Silva" autocomplete="off" autocorrect="off">
+    </div>
+
+    <div class="row">
+      <div class="field">
+        <label>CPF / CNPJ</label>
+        <input type="text" id="cpf" placeholder="000.000.000-00" autocomplete="off">
+      </div>
+      <div class="field">
+        <label>Telefone / WhatsApp <span class="req">*</span></label>
+        <input type="tel" id="tel" placeholder="(55) 99999-0000">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Telefone adicional / Capataz</label>
+      <input type="tel" id="tel2" placeholder="(55) 99999-0000">
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Propriedade</div>
+
+    <div class="field">
+      <label>Nome da propriedade / Estância</label>
+      <input type="text" id="propriedade" placeholder="Ex: Estância Santa Maria" autocorrect="off">
+    </div>
+
+    <div class="row">
+      <div class="field">
+        <label>Área aproximada (ha)</label>
+        <input type="number" id="area" placeholder="0" inputmode="decimal">
+      </div>
+      <div class="field">
+        <label>Localidade / Distrito</label>
+        <input type="text" id="localidade" placeholder="Ex: Rincão do Tigre">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Tipo de propriedade</label>
+      <div class="pills">
+        <input class="pill-option" type="radio" name="tipo" id="tipo1" value="Própria">
+        <label class="pill-label" for="tipo1">Própria</label>
+        <input class="pill-option" type="radio" name="tipo" id="tipo2" value="Arrendada">
+        <label class="pill-label" for="tipo2">Arrendada</label>
+        <input class="pill-option" type="radio" name="tipo" id="tipo3" value="Herança/Espólio">
+        <label class="pill-label" for="tipo3">Herança</label>
+        <input class="pill-option" type="radio" name="tipo" id="tipo4" value="Não informado">
+        <label class="pill-label" for="tipo4">Não inf.</label>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Atividade principal</label>
+      <div class="pills">
+        <input class="pill-option" type="radio" name="atividade" id="at1" value="Pecuária">
+        <label class="pill-label" for="at1">Pecuária</label>
+        <input class="pill-option" type="radio" name="atividade" id="at2" value="Lavoura">
+        <label class="pill-label" for="at2">Lavoura</label>
+        <input class="pill-option" type="radio" name="atividade" id="at3" value="Mista">
+        <label class="pill-label" for="at3">Mista</label>
+        <input class="pill-option" type="radio" name="atividade" id="at4" value="Arrendamento">
+        <label class="pill-label" for="at4">Arrendamento</label>
+        <input class="pill-option" type="radio" name="atividade" id="at5" value="Outra">
+        <label class="pill-label" for="at5">Outra</label>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Localização GPS</div>
+    <div class="gps-box">
+      <div class="gps-icon">📍</div>
+      <div class="gps-data">
+        <div class="gps-coords" id="gps-text">Não capturado</div>
+        <div class="gps-status" id="gps-status">Toque em Capturar para registrar</div>
+      </div>
+      <button class="btn-gps" onclick="captureGPS()">Capturar</button>
+    </div>
+    <input type="hidden" id="lat">
+    <input type="hidden" id="lng">
+  </div>
+
+  <div class="section">
+    <div class="section-label">Situação da visita</div>
+
+    <div class="field">
+      <label>Resultado do contato <span class="req">*</span></label>
+      <div class="status-grid">
+        <div class="status-card s-card-interessado" onclick="setStatus('Interessado', this)">
+          <div class="s-icon">🟢</div>
+          <div class="s-label">Interessado</div>
+        </div>
+        <div class="status-card s-card-neutro" onclick="setStatus('Neutro', this)">
+          <div class="s-icon">🟡</div>
+          <div class="s-label">Neutro</div>
+        </div>
+        <div class="status-card s-card-resistente" onclick="setStatus('Resistente', this)">
+          <div class="s-icon">🔴</div>
+          <div class="s-label">Resistente</div>
+        </div>
+        <div class="status-card s-card-ausente" onclick="setStatus('Ausente', this)">
+          <div class="s-icon">⚫</div>
+          <div class="s-label">Ausente</div>
+        </div>
+      </div>
+      <input type="hidden" id="status_visita">
+    </div>
+
+    <div class="field">
+      <label>Retorno necessário?</label>
+      <div class="pills">
+        <input class="pill-option" type="radio" name="retorno" id="ret1" value="Sim">
+        <label class="pill-label" for="ret1">Sim</label>
+        <input class="pill-option" type="radio" name="retorno" id="ret2" value="Não">
+        <label class="pill-label" for="ret2">Não</label>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Documento entregue</label>
+      <div class="pills">
+        <input class="pill-option" type="radio" name="doc" id="doc1" value="Carta apresentação">
+        <label class="pill-label" for="doc1">Carta</label>
+        <input class="pill-option" type="radio" name="doc" id="doc2" value="Folder/Panfleto">
+        <label class="pill-label" for="doc2">Folder</label>
+        <input class="pill-option" type="radio" name="doc" id="doc3" value="Nenhum">
+        <label class="pill-label" for="doc3">Nenhum</label>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Observações</div>
+    <div class="field">
+      <label>Notas da visita</label>
+      <textarea id="obs" placeholder="Pontos relevantes, objeções, indicações de vizinhos, horário melhor para retornar..." rows="4"></textarea>
+    </div>
+  </div>
+
+  <button class="btn-save" onclick="saveRecord()">✦ Salvar Registro</button>
+</div>
+
+<!-- ═══════════════════════════════════════════════ LIST -->
+<div class="page" id="page-list">
+  <div id="list-container">
+    <div class="empty-state">
+      <div class="big">📁</div>
+      Nenhum registro ainda.<br>Use a aba <strong>Novo</strong> para começar.
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ EXPORT -->
+<div class="page" id="page-export">
+
+  <div class="export-panel">
+    <h3>Resumo da prospecção</h3>
+    <div class="stat-row">
+      <span>Total visitado</span>
+      <span class="stat-num" id="stat-total" style="color:var(--accent2)">0</span>
+    </div>
+    <div class="stat-row">
+      <span>🟢 Interessados</span>
+      <span class="stat-num" id="stat-i" style="color:var(--accent)">0</span>
+    </div>
+    <div class="stat-row">
+      <span>🟡 Neutros</span>
+      <span class="stat-num" id="stat-n" style="color:var(--warn)">0</span>
+    </div>
+    <div class="stat-row">
+      <span>🔴 Resistentes</span>
+      <span class="stat-num" id="stat-r" style="color:var(--danger)">0</span>
+    </div>
+    <div class="stat-row">
+      <span>⚫ Ausentes</span>
+      <span class="stat-num" id="stat-a" style="color:var(--muted)">0</span>
+    </div>
+  </div>
+
+  <button class="btn-export" onclick="exportCSV()">⬇ Exportar CSV (planilha)</button>
+  <button class="btn-export" onclick="exportTXT()">⬇ Exportar TXT (leitura)</button>
+  <button class="btn-export" onclick="exportWA()">📲 Resumo para WhatsApp</button>
+  <br><br>
+  <button class="btn-danger" onclick="clearAll()">⚠ Apagar todos os dados</button>
+</div>
+
+<!-- MODAL DETALHE -->
+<div class="modal-overlay" id="modal">
+  <div class="modal" id="modal-content"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+<div class="bottom-safe"></div>
+
+<script>
+const STORE_KEY = 'eolica_prospeccao_v1';
+let records = [];
+let currentStatus = '';
+let editingId = null;
+
+function init() {
+  const saved = localStorage.getItem(STORE_KEY);
+  if (saved) records = JSON.parse(saved);
+  updateCounter();
+  updateDate();
+  renderList();
+  updateStats();
+}
+
+function updateDate() {
+  const d = new Date();
+  const opts = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+  document.getElementById('current-date').textContent = d.toLocaleDateString('pt-BR', opts);
+}
+
+function save() {
+  localStorage.setItem(STORE_KEY, JSON.stringify(records));
+  updateCounter();
+  updateStats();
+}
+
+function updateCounter() {
+  document.getElementById('counter').textContent = records.length + (records.length === 1 ? ' registro' : ' registros');
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + tab).classList.add('active');
+  event.target.classList.add('active');
+  if (tab === 'list') renderList();
+  if (tab === 'export') updateStats();
+}
+
+function setStatus(val, el) {
+  currentStatus = val;
+  document.getElementById('status_visita').value = val;
+  document.querySelectorAll('.status-card').forEach(c => c.classList.remove('sel'));
+  el.classList.add('sel');
+}
+
+function captureGPS() {
+  const btn = document.querySelector('.btn-gps');
+  btn.textContent = '...';
+  document.getElementById('gps-status').textContent = 'Obtendo localização...';
+  if (!navigator.geolocation) {
+    document.getElementById('gps-status').textContent = 'GPS não disponível neste dispositivo.';
+    btn.textContent = 'Capturar';
+    return;
+  }
+  navigator.geolocation.getCurrentPosition(pos => {
+    const lat = pos.coords.latitude.toFixed(6);
+    const lng = pos.coords.longitude.toFixed(6);
+    document.getElementById('lat').value = lat;
+    document.getElementById('lng').value = lng;
+    document.getElementById('gps-text').textContent = lat + ', ' + lng;
+    document.getElementById('gps-status').textContent = '✓ Precisão: ~' + Math.round(pos.coords.accuracy) + 'm';
+    btn.textContent = '✓ Ok';
+    setTimeout(() => btn.textContent = 'Atualizar', 1500);
+  }, err => {
+    document.getElementById('gps-status').textContent = 'Erro: ' + (err.code === 1 ? 'Permissão negada' : 'Sinal fraco');
+    btn.textContent = 'Tentar';
+  }, { enableHighAccuracy: true, timeout: 15000 });
+}
+
+function getRadio(name) {
+  const el = document.querySelector('input[name="' + name + '"]:checked');
+  return el ? el.value : '';
+}
+
+function saveRecord() {
+  const nome = document.getElementById('nome').value.trim();
+  const tel = document.getElementById('tel').value.trim();
+  const status = document.getElementById('status_visita').value;
+
+  if (!nome) { showToast('⚠ Preencha o nome do proprietário'); return; }
+  if (!tel) { showToast('⚠ Preencha o telefone'); return; }
+  if (!status) { showToast('⚠ Selecione o resultado da visita'); return; }
+
+  const rec = {
+    id: Date.now(),
+    data: new Date().toLocaleDateString('pt-BR'),
+    hora: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+    nome,
+    cpf: document.getElementById('cpf').value.trim(),
+    tel,
+    tel2: document.getElementById('tel2').value.trim(),
+    propriedade: document.getElementById('propriedade').value.trim(),
+    area: document.getElementById('area').value.trim(),
+    localidade: document.getElementById('localidade').value.trim(),
+    tipo: getRadio('tipo'),
+    atividade: getRadio('atividade'),
+    lat: document.getElementById('lat').value,
+    lng: document.getElementById('lng').value,
+    status,
+    retorno: getRadio('retorno'),
+    doc: getRadio('doc'),
+    obs: document.getElementById('obs').value.trim()
+  };
+
+  records.unshift(rec);
+  save();
+  clearForm();
+  showToast('✓ Registro salvo!');
+  renderList();
+}
+
+function clearForm() {
+  ['nome','cpf','tel','tel2','propriedade','area','localidade','obs','lat','lng'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  document.querySelectorAll('.pill-option, input[name="tipo"], input[name="atividade"], input[name="retorno"], input[name="doc"]').forEach(r => r.checked = false);
+  document.querySelectorAll('.status-card').forEach(c => c.classList.remove('sel'));
+  document.getElementById('status_visita').value = '';
+  document.getElementById('gps-text').textContent = 'Não capturado';
+  document.getElementById('gps-status').textContent = 'Toque em Capturar para registrar';
+  document.querySelector('.btn-gps').textContent = 'Capturar';
+  currentStatus = '';
+  window.scrollTo(0, 0);
+}
+
+function renderList() {
+  const container = document.getElementById('list-container');
+  if (records.length === 0) {
+    container.innerHTML = '<div class="empty-state"><div class="big">📁</div>Nenhum registro ainda.<br>Use a aba <strong>Novo</strong> para começar.</div>';
+    return;
+  }
+  const statusMap = { 'Interessado': 'I', 'Neutro': 'N', 'Resistente': 'R', 'Ausente': 'A' };
+  container.innerHTML = records.map(r => `
+    <div class="record-card" onclick="showDetail(${r.id})">
+      <div class="record-name">${r.nome}</div>
+      <div class="record-meta">
+        <span>📅 ${r.data} ${r.hora}</span>
+        ${r.propriedade ? '<span>🏡 ' + r.propriedade + '</span>' : ''}
+        ${r.tel ? '<span>📞 ' + r.tel + '</span>' : ''}
+        ${r.localidade ? '<span>📍 ' + r.localidade + '</span>' : ''}
+      </div>
+      <div class="record-status status-${statusMap[r.status] || 'A'}">${r.status}</div>
+    </div>
+  `).join('');
+}
+
+function showDetail(id) {
+  const r = records.find(x => x.id === id);
+  if (!r) return;
+  const fields = [
+    ['Data / Hora', r.data + ' às ' + r.hora],
+    ['Nome', r.nome],
+    ['CPF / CNPJ', r.cpf || '—'],
+    ['WhatsApp', r.tel],
+    ['Contato 2', r.tel2 || '—'],
+    ['Propriedade', r.propriedade || '—'],
+    ['Área', r.area ? r.area + ' ha' : '—'],
+    ['Localidade', r.localidade || '—'],
+    ['Tipo', r.tipo || '—'],
+    ['Atividade', r.atividade || '—'],
+    ['GPS', r.lat ? r.lat + ', ' + r.lng : '—'],
+    ['Status', r.status],
+    ['Retorno', r.retorno || '—'],
+    ['Documento', r.doc || '—'],
+    ['Observações', r.obs || '—']
+  ];
+  document.getElementById('modal-content').innerHTML = `
+    <div class="modal-header">
+      <div class="modal-name">${r.nome}</div>
+      <button class="btn-close" onclick="closeModal()">×</button>
+    </div>
+    ${fields.map(([k, v]) => `<div class="modal-row"><div class="modal-key">${k}</div><div class="modal-val">${v}</div></div>`).join('')}
+    <button class="btn-del" onclick="deleteRecord(${r.id})">⚠ Excluir este registro</button>
+  `;
+  document.getElementById('modal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+}
+
+document.getElementById('modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+function deleteRecord(id) {
+  if (!confirm('Excluir este registro?')) return;
+  records = records.filter(r => r.id !== id);
+  save();
+  closeModal();
+  renderList();
+  showToast('Registro excluído');
+}
+
+function updateStats() {
+  const total = records.length;
+  document.getElementById('stat-total').textContent = total;
+  document.getElementById('stat-i').textContent = records.filter(r => r.status === 'Interessado').length;
+  document.getElementById('stat-n').textContent = records.filter(r => r.status === 'Neutro').length;
+  document.getElementById('stat-r').textContent = records.filter(r => r.status === 'Resistente').length;
+  document.getElementById('stat-a').textContent = records.filter(r => r.status === 'Ausente').length;
+}
+
+function exportCSV() {
+  if (records.length === 0) { showToast('Nenhum registro para exportar'); return; }
+  const cols = ['Data','Hora','Nome','CPF/CNPJ','Telefone','Telefone2','Propriedade','Area_ha','Localidade','Tipo','Atividade','Latitude','Longitude','Status','Retorno','Documento','Observacoes'];
+  const rows = records.map(r => [
+    r.data, r.hora, r.nome, r.cpf, r.tel, r.tel2,
+    r.propriedade, r.area, r.localidade, r.tipo, r.atividade,
+    r.lat, r.lng, r.status, r.retorno, r.doc,
+    '"' + (r.obs || '').replace(/"/g, '""') + '"'
+  ].join(';'));
+  const csv = cols.join(';') + '\n' + rows.join('\n');
+  downloadFile('prospeccao_eolica_' + today() + '.csv', 'text/csv;charset=utf-8;', '\uFEFF' + csv);
+  showToast('CSV gerado!');
+}
+
+function exportTXT() {
+  if (records.length === 0) { showToast('Nenhum registro para exportar'); return; }
+  const txt = records.map((r, i) => [
+    '═══════════════════════════════',
+    'Registro #' + (i + 1) + ' — ' + r.data + ' ' + r.hora,
+    '═══════════════════════════════',
+    'Nome:        ' + r.nome,
+    'CPF/CNPJ:    ' + (r.cpf || '—'),
+    'Telefone:    ' + r.tel,
+    'Tel. 2:      ' + (r.tel2 || '—'),
+    'Propriedade: ' + (r.propriedade || '—'),
+    'Área:        ' + (r.area ? r.area + ' ha' : '—'),
+    'Localidade:  ' + (r.localidade || '—'),
+    'Tipo:        ' + (r.tipo || '—'),
+    'Atividade:   ' + (r.atividade || '—'),
+    'GPS:         ' + (r.lat ? r.lat + ', ' + r.lng : '—'),
+    'Status:      ' + r.status,
+    'Retorno:     ' + (r.retorno || '—'),
+    'Documento:   ' + (r.doc || '—'),
+    'Obs:         ' + (r.obs || '—'),
+  ].join('\n')).join('\n\n');
+  downloadFile('prospeccao_eolica_' + today() + '.txt', 'text/plain;charset=utf-8;', txt);
+  showToast('TXT gerado!');
+}
+
+function exportWA() {
+  if (records.length === 0) { showToast('Nenhum registro para exportar'); return; }
+  const i = records.filter(r => r.status === 'Interessado').length;
+  const n = records.filter(r => r.status === 'Neutro').length;
+  const res = records.filter(r => r.status === 'Resistente').length;
+  const a = records.filter(r => r.status === 'Ausente').length;
+  const retorno = records.filter(r => r.retorno === 'Sim').length;
+
+  let msg = `*Relatório de Prospecção — Alegrete/RS*\n`;
+  msg += `📅 ${new Date().toLocaleDateString('pt-BR')}\n\n`;
+  msg += `*Resumo do dia:*\n`;
+  msg += `✅ Total visitado: ${records.length}\n`;
+  msg += `🟢 Interessados: ${i}\n`;
+  msg += `🟡 Neutros: ${n}\n`;
+  msg += `🔴 Resistentes: ${res}\n`;
+  msg += `⚫ Ausentes: ${a}\n`;
+  msg += `🔄 Precisam retorno: ${retorno}\n\n`;
+
+  const interessados = records.filter(r => r.status === 'Interessado');
+  if (interessados.length > 0) {
+    msg += `*Interessados:*\n`;
+    interessados.forEach(r => {
+      msg += `• ${r.nome} — ${r.tel}${r.propriedade ? ' (' + r.propriedade + ')' : ''}\n`;
+    });
+  }
+
+  const encoded = encodeURIComponent(msg);
+  window.open('https://api.whatsapp.com/send?text=' + encoded);
+}
+
+function downloadFile(name, type, content) {
+  const blob = new Blob([content], { type });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function today() {
+  return new Date().toISOString().slice(0, 10).replace(/-/g, '');
+}
+
+function clearAll() {
+  if (!confirm('Apagar TODOS os registros? Esta ação não pode ser desfeita.')) return;
+  records = [];
+  save();
+  renderList();
+  showToast('Todos os dados apagados');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+init();
+</script>
+</body>
+</html>
